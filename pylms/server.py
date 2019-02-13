@@ -238,8 +238,11 @@ class Server(object):
     def __encode(self, text):
         return text.encode(self.charset)
 
-    def __decode(self, bytes):
-        return bytes.decode(self.charset)
+    def __decode(self, bytes_):
+        if isinstance(bytes_, bytes):
+            return bytes_.decode(self.charset)
+        else:
+            return bytes_
 
     def __quote(self, text):
         try:
@@ -252,7 +255,7 @@ class Server(object):
     def __unquote(self, text):
         try:
             import urllib.parse
-            return urllib.parse.unquote(text, encoding=self.charset)
+            return urllib.parse.unquote(text.decode('utf8') if isinstance(text, bytes) else text, encoding=self.charset)
         except ImportError:
             import urllib
             return urllib.unquote(text)
